@@ -12,6 +12,7 @@ use color_space::CGColorSpace;
 use core_foundation::base::{ToVoid, CFRelease, CFRetain, CFTypeID};
 use font::{CGFont, CGGlyph};
 use geometry::CGPoint;
+use gradient::CGGradientRef;
 use color::CGColor;
 use path::CGPathRef;
 use libc::{c_int, size_t};
@@ -535,6 +536,12 @@ impl CGContextRef {
             CGContextConcatCTM(self.as_ptr(), transform)
         }
     }
+
+    pub fn draw_linear_gradient(&self, gradient: &CGGradientRef, start_point: CGPoint, end_point: CGPoint, options: u32) {
+        unsafe {
+            CGContextDrawLinearGradient(self.as_ptr(), gradient.as_ptr(), start_point, end_point, options);
+        }
+    }
 }
 
 #[test]
@@ -681,5 +688,7 @@ extern {
     fn CGContextRotateCTM(c: ::sys::CGContextRef, angle: CGFloat);
     fn CGContextGetCTM(c: ::sys::CGContextRef) -> CGAffineTransform;
     fn CGContextConcatCTM(c: ::sys::CGContextRef, transform: CGAffineTransform);
+
+    fn CGContextDrawLinearGradient(c: ::sys::CGContextRef, gradient: ::sys::CGGradientRef, startPoint: CGPoint, endPoint: CGPoint, options: u32);
 }
 
